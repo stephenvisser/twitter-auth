@@ -15,10 +15,14 @@
 # limitations under the License.
 #
 import webapp2
+import logging
 
-class MainHandler(webapp2.RequestHandler):
-    def get(self):
-        self.response.out.write('Hello world!')
+import sys
+import os
 
-app = webapp2.WSGIApplication([('/', MainHandler)],
-                              debug=True)
+from webapp2_extras import sessions
+
+class ProviderHandler(webapp2.RequestHandler):
+  def get(self, provider):
+    self.response.out.write(provider)
+

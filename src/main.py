@@ -1,5 +1,5 @@
-from handlers import DefaultHandler
-from handlers import AuthHandler
+from auth.handlers import DefaultHandler
+from auth.handlers import AuthHandler
 
 import webapp2
 

@@ -6,6 +6,7 @@ from tweepy.auth import OAuthHandler
 from tweepy.api import API
 
 import logging
+from model import User
 
 class SessionHandler(webapp2.RequestHandler):
   def dispatch(self):
@@ -33,11 +34,9 @@ class DefaultHandler(SessionHandler):
 
 class AuthHandler(SessionHandler):
   def get(self):
-
     #Set up our twitter auth object
     config = self.app.config['twitter']
     auth = OAuthHandler(config['consumer_key'], config['consumer_secret'], self.request.host_url + '/auth')
-
 
     tkn = self.session.get('twitter')
     if tkn:
@@ -47,9 +46,16 @@ class AuthHandler(SessionHandler):
       del self.session['twitter']
 
       auth.get_access_token(self.request.get('oauth_verifier'))
-      self.response.out.write(API(auth).me().__dict__)
+      me = API(auth).me()
+      results = User.query().filter(User.twitter_id == me.id).fetch()
+      if results:
+        user = results[0]
+      else:
+        user = User(twitter_id=me.id, name=me.name, location=me.location, tz=me.time_zone)
+        user.put()
+      self.session['user'] = user.key.id()
+      self.redirect('/')
     else:
       redirect_url = auth.get_authorization_url(signin_with_twitter=True)
-      logging.getLogger().info(redirect_url)
       self.session['twitter'] = (auth.request_token.key, auth.request_token.secret)
-      self.response.out.write('<meta http-equiv="refresh" content="0;url={0}">'.format(redirect_url))
+      self.redirect(redirect_url)

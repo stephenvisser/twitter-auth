@@ -1,1 +1,0 @@
-../../tweepy/tweepy/auth.py

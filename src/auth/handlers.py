@@ -71,10 +71,9 @@ class AuthHandler(SessionHandler):
           #Make sure all the properties are up-to-date
           user.name = me.name
           user.location = me.location
-          user.tz = me.time_zone
           user.put()
         else:
-          user = User(twitter_id=me.id, name=me.name, location=me.location, tz=me.time_zone)
+          user = User(twitter_id=me.id, name=me.name, location=me.location)
           user.put()
         
         #The user_id should be part of the session
